@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login | Abhay's Educational Site</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -11,7 +11,7 @@
       --accent: #f9a825;
       --bg: #0f0f0f;
       --text: #f5f5f5;
-      --card-bg: #1d1d1d;
+      --card-bg: #1c1c1c;
     }
 
     * {
@@ -24,7 +24,7 @@
       font-family: 'Inter', sans-serif;
       background: var(--bg);
       color: var(--text);
-      min-height: 100vh;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -32,55 +32,38 @@
       position: relative;
     }
 
-    .background {
+    video {
       position: absolute;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle at 20% 20%, #1e88e530, transparent 60%),
-                  radial-gradient(circle at 80% 80%, #f9a82530, transparent 60%);
-      animation: floatBg 30s infinite alternate ease-in-out;
-      z-index: 0;
-    }
-
-    @keyframes floatBg {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(-15%, -15%); }
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 10;
     }
 
     .card {
       background: var(--card-bg);
       padding: 2.5rem;
       border-radius: 1rem;
-      box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
       max-width: 400px;
       width: 100%;
-      z-index: 1;
-      animation: fadeInUp 1s ease-out;
+      z-index: 0;
+      opacity: 0;
+      transform: scale(0.9);
+      transition: opacity 0.8s ease, transform 0.8s ease;
     }
 
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(50px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .card.show {
+      opacity: 1;
+      transform: scale(1);
+      z-index: 11;
     }
 
     h1 {
       color: var(--primary);
       font-size: 2rem;
-      margin-bottom: 0.5rem;
       text-align: center;
-    }
-
-    p {
-      color: var(--accent);
-      text-align: center;
-      font-size: 1rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
     }
 
     input {
@@ -94,10 +77,6 @@
       font-size: 1rem;
     }
 
-    input::placeholder {
-      color: #aaa;
-    }
-
     button {
       width: 100%;
       background-color: var(--primary);
@@ -108,41 +87,25 @@
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: background 0.3s;
     }
 
     button:hover {
       background-color: #1565c0;
-      transform: scale(1.02);
-    }
-
-    footer {
-      position: absolute;
-      bottom: 1rem;
-      font-size: 0.9rem;
-      color: #aaa;
-      text-align: center;
-      z-index: 1;
-    }
-
-    footer a {
-      color: var(--primary);
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      color: var(--accent);
     }
   </style>
 </head>
 <body>
 
-  <div class="background"></div>
+  <!-- Black Panther Clip (2 seconds) -->
+  <video id="intro" autoplay muted playsinline>
+    <source src="black-panther.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
 
-  <div class="card">
-    <h1>🌐 Ayush mere dost</h1>
-    <p>Password aur Username define karna abhi baki hai aur notes bhi upload karunga</p>
-    
+  <!-- Login Card -->
+  <div class="card" id="loginCard">
+    <h1>Welcome Ayush</h1>
     <form onsubmit="handleLogin(event)">
       <input type="text" id="username" placeholder="Username" required />
       <input type="password" id="password" placeholder="Password" required />
@@ -150,12 +113,24 @@
     </form>
   </div>
 
-  <footer>
-    Created by Abhay | Hosted via Namecheap | 
-    <a href="https://github.com/yourusername/your-repo" target="_blank">GitHub</a>
-  </footer>
-
   <script>
+    // Wait for video to finish
+    window.onload = () => {
+      const video = document.getElementById("intro");
+      const card = document.getElementById("loginCard");
+
+      video.onended = () => {
+        video.style.display = "none";
+        card.classList.add("show");
+      };
+
+      // Force end after 2 seconds if not auto-ending
+      setTimeout(() => {
+        video.style.display = "none";
+        card.classList.add("show");
+      }, 2000);
+    };
+
     function handleLogin(e) {
       e.preventDefault();
       const user = document.getElementById('username').value;
@@ -164,7 +139,7 @@
       if (user === "ayush" && pass === "1234") {
         window.location.href = "dashboard.html";
       } else {
-        alert("Galat username/password! Try: ayush / 1234");
+        alert("Incorrect username/password.");
       }
     }
   </script>
