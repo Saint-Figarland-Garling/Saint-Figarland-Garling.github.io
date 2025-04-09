@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | Abhay's Site</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1e88e5;
+      --accent: #f9a825;
+      --bg: #121212;
+      --card: #1d1d1d;
+      --text: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      overflow-x: hidden;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+      animation: fadeIn 1s ease-out;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      color: var(--primary);
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      color: var(--accent);
+      margin-top: 0.5rem;
+    }
+
+    .dashboard {
+      background: var(--card);
+      border-radius: 1rem;
+      padding: 2rem;
+      width: 100%;
+      max-width: 700px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+      animation: slideIn 1.2s ease-out;
+    }
+
+    .section {
+      margin-bottom: 2rem;
+    }
+
+    .section h2 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+
+    .upload {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    input[type="file"] {
+      background: #2a2a2a;
+      padding: 0.8rem;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+    }
+
+    button {
+      background: var(--primary);
+      border: none;
+      padding: 0.8rem 1rem;
+      color: white;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #1565c0;
+    }
+
+    .logout {
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .logout a {
+      color: #ccc;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .logout a:hover {
+      color: var(--accent);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>👋 Namaste Ayush!</h1>
+    <p>Jo mai bota hu vo mai karta hu use samjha de bas..</p>
+  </div>
+
+  <div class="dashboard">
+    <div class="section">
+      <h2>📂 Upload Notes</h2>
+      <div class="upload">
+        <input type="file" />
+        <button onclick="alert('Upload feature coming soon!')">Upload</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📝 Your Notes</h2>
+      <p>Yahan pe aapke notes dikhenge... (feature under construction)</p>
+    </div>
+
+    <div class="logout">
+      <a href="index.html">🚪 Logout</a>
+    </div>
+  </div>
+
+</body>
+</html>
