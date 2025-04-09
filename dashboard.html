@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard | Abhay's Site</title>
+  <title>Dashboard | Abhay's Educational Site</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -37,6 +37,8 @@
       margin-bottom: 2rem;
       z-index: 2;
       position: relative;
+      animation: zoomIn 1.5s ease-out forwards;
+      transform: scale(0);
     }
 
     .header h1 {
@@ -60,17 +62,19 @@
       z-index: 2;
       position: relative;
       text-align: center;
-      animation: fadeIn 1s ease-out 1s forwards;
-      opacity: 0;
+      animation: zoomIn 1.5s ease-out 0.5s forwards;
+      transform: scale(0);
     }
 
     .dashboard h2 {
       color: var(--accent);
-      font-size: 1.7rem;
+      font-size: 1.8rem;
+      margin-bottom: 0.8rem;
     }
 
     .logout {
       margin-top: 2rem;
+      z-index: 2;
     }
 
     .logout a {
@@ -83,11 +87,12 @@
       color: var(--accent);
     }
 
-    @keyframes fadeIn {
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes zoomIn {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
 
-    /* Animation: paper strips */
+    /* Color Paper Strips */
     .strips {
       position: absolute;
       top: 0;
@@ -127,17 +132,17 @@
   </div>
 
   <div class="header">
-    <h1>👋 नमस्ते Ayush!</h1>
-    <p>Jo mai bota hu vo mai karta hu, use samjha de बस..</p>
+    <h1>👋 Welcome Ayush!</h1>
+    <p>I do what I say, just make sure they understand it.</p>
   </div>
 
   <div class="dashboard">
-    <h2>📝 यहाँ हैं आपके नोट्स</h2>
-    <p>यहाँ भविष्य में आपके बनाए हुए नोट्स दिखेंगे।</p>
+    <h2>📝 Here Are Your Notes</h2>
+    <p>This is your personal note area. More features coming soon!</p>
   </div>
 
   <div class="logout">
-    <a href="index.html">🚪 लॉगआउट</a>
+    <a href="index.html">🚪 Logout</a>
   </div>
 
 </body>
