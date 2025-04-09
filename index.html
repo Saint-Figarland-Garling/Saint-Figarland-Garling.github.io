@@ -1,55 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ayush | Abhay's Educational Site</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500&family=Orbitron:wght@600&display=swap" rel="stylesheet">
   <style>
     body {
-      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-      color: #f1f1f1;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: #0d0d0d;
+      overflow: hidden;
+      color: white;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
-      height: 100vh;
-      margin: 0;
-      text-align: center;
+      align-items: center;
+      font-family: 'Rajdhani', sans-serif;
     }
 
     h1 {
       font-size: 3rem;
-      margin-bottom: 0.5rem;
       color: #00ffe7;
+      text-shadow: 0 0 10px #00ffe7, 0 0 20px #00ffe7;
     }
 
     p {
-      font-size: 1.2rem;
-      max-width: 600px;
-      margin: 0 auto;
-      color: #e0e0e0;
-    }
-
-    .highlight {
+      font-size: 1.5rem;
       color: #ffae00;
-      font-weight: bold;
+      text-shadow: 0 0 5px #ffae00;
+      max-width: 700px;
+      text-align: center;
+      margin-top: 1rem;
     }
 
     footer {
-      margin-top: 2rem;
+      position: absolute;
+      bottom: 20px;
       font-size: 0.9rem;
       color: #aaa;
+    }
+
+    a {
+      color: #00ffe7;
+      text-decoration: none;
+    }
+
+    .orb {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, #00ffe7 0%, #00000000 70%);
+      border-radius: 50%;
+      animation: moveOrb 10s infinite alternate ease-in-out;
+      z-index: 0;
+    }
+
+    @keyframes moveOrb {
+      0% { top: 10%; left: 10%; }
+      50% { top: 40%; left: 60%; }
+      100% { top: 80%; left: 30%; }
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
-  <h1>🌐 Ayush Presents</h1>
-  <p>This educational site is proudly powered by <span class="highlight">Abhay’s code</span>, built for learning, sharing, and growing together.</p>
-  
+  <div class="orb"></div>
+
+  <div class="content">
+    <h1>🌐 अयुष द्वारा प्रस्तुत</h1>
+    <p>“जो मैं बोलता हूँ वो मैं करता हूँ, उसे समझा दे बस..”</p>
+  </div>
+
   <footer>
-    Hosted via <span class="highlight">Namecheap</span> | Code on <a href="https://github.com/yourusername/your-repo" target="_blank" style="color:#00ffe7;">GitHub</a>
+    कोड ❤️ से बनाया गया Abhay द्वारा | Hosted via Namecheap | <a href="https://github.com/yourusername/your-repo" target="_blank">GitHub देखें</a>
   </footer>
 
 </body>
