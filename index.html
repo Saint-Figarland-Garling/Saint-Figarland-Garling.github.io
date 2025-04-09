@@ -1,87 +1,170 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ayush | Abhay's Educational Site</title>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500&family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
+    :root {
+      --primary: #1e88e5;
+      --accent: #f9a825;
+      --bg: #121212;
+      --text: #f5f5f5;
+      --card-bg: #1e1e1e;
+    }
+
+    * {
       margin: 0;
       padding: 0;
-      height: 100vh;
-      background: #0d0d0d;
-      overflow: hidden;
-      color: white;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      font-family: 'Rajdhani', sans-serif;
+      flex-direction: column;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
     }
 
-    h1 {
-      font-size: 3rem;
-      color: #00ffe7;
-      text-shadow: 0 0 10px #00ffe7, 0 0 20px #00ffe7;
-    }
-
-    p {
-      font-size: 1.5rem;
-      color: #ffae00;
-      text-shadow: 0 0 5px #ffae00;
-      max-width: 700px;
-      text-align: center;
-      margin-top: 1rem;
-    }
-
-    footer {
+    .background-animation {
       position: absolute;
-      bottom: 20px;
-      font-size: 0.9rem;
-      color: #aaa;
-    }
-
-    a {
-      color: #00ffe7;
-      text-decoration: none;
-    }
-
-    .orb {
-      position: absolute;
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle, #00ffe7 0%, #00000000 70%);
-      border-radius: 50%;
-      animation: moveOrb 10s infinite alternate ease-in-out;
+      width: 300%;
+      height: 300%;
+      background: radial-gradient(circle at 30% 30%, #1e88e510, transparent 60%),
+                  radial-gradient(circle at 70% 70%, #f9a82510, transparent 60%);
+      animation: floatBackground 30s ease-in-out infinite alternate;
       z-index: 0;
     }
 
-    @keyframes moveOrb {
-      0% { top: 10%; left: 10%; }
-      50% { top: 40%; left: 60%; }
-      100% { top: 80%; left: 30%; }
+    @keyframes floatBackground {
+      0% { transform: translate(0%, 0%); }
+      100% { transform: translate(-15%, -15%); }
     }
 
-    .content {
-      position: relative;
+    .container {
+      max-width: 400px;
+      width: 100%;
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
       z-index: 1;
+    }
+
+    .title {
       text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .title h1 {
+      color: var(--primary);
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .title p {
+      color: var(--accent);
+      font-size: 1rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    input {
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 8px;
+      background: #2a2a2a;
+      color: white;
+      font-size: 1rem;
+    }
+
+    input::placeholder {
+      color: #aaa;
+    }
+
+    button {
+      background-color: var(--primary);
+      border: none;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1565c0;
+    }
+
+    footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #aaa;
+      text-align: center;
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: var(--accent);
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1.5rem;
+      }
+
+      .title h1 {
+        font-size: 1.5rem;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="orb"></div>
+  <div class="background-animation"></div>
 
-  <div class="content">
-    <h1>🌐 Ayush mere dost </h1>
-    <p>Password aur Username define karna abhi baki hai aur notes bhi upload karunga</p>
+  <div class="container">
+    <div class="title">
+      <h1>🌐 Ayush mere dost</h1>
+      <p>Password aur Username define karna abhi baki hai aur notes bhi upload karunga</p>
+    </div>
+    
+    <form onsubmit="handleLogin(event)">
+      <input type="text" placeholder="Username" required />
+      <input type="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
   </div>
 
   <footer>
-    Created by Abhay | Hosted via Namecheap | <a href="https://github.com/yourusername/your-repo" target="_blank">GitHub </a>
+    Created by Abhay | Hosted via Namecheap | 
+    <a href="https://github.com/yourusername/your-repo" target="_blank">GitHub</a>
   </footer>
+
+  <script>
+    function handleLogin(e) {
+      e.preventDefault();
+      alert("Login functionality coming soon!");
+    }
+  </script>
 
 </body>
 </html>
