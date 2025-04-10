@@ -2,191 +2,117 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Physics Notes | Abhay's Educational Site</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Physics Notes | Abhay's Site</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
-      background: #0f0f0f;
-      color: #ffffff;
-      overflow-x: hidden;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: white;
+      min-height: 100vh;
+      padding: 2rem;
     }
 
-    .background-animation {
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      color: #f9a825;
+      margin-bottom: 2rem;
+    }
+
+    .section {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+
+    .section h2 {
+      font-size: 1.6rem;
+      color: #ffdd57;
+      margin-bottom: 1rem;
+    }
+
+    .note-list a {
+      display: block;
+      margin: 0.5rem 0;
+      color: #90caf9;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .note-list a:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    /* Floating particles animation */
+    .particles {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: repeating-linear-gradient(
-        45deg,
-        rgba(255, 255, 255, 0.02),
-        rgba(255, 255, 255, 0.02) 2px,
-        transparent 2px,
-        transparent 10px
-      );
-      z-index: 0;
-      animation: moveBg 20s linear infinite;
+      pointer-events: none;
+      z-index: -1;
     }
 
-    @keyframes moveBg {
-      0% { background-position: 0 0; }
-      100% { background-position: 1000px 1000px; }
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      animation: float 10s infinite ease-in-out;
     }
 
-    .container {
-      position: relative;
-      z-index: 1;
-      padding: 3rem 1rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    h1 {
-      color: #1e88e5;
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      animation: zoomIn 1s ease;
-    }
-
-    @keyframes zoomIn {
-      from {
-        transform: scale(0.8);
+    @keyframes float {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.5;
+      }
+      100% {
+        transform: translateY(-100vh) scale(1.5);
         opacity: 0;
       }
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    p {
-      font-size: 1.1rem;
-      color: #ccc;
-      max-width: 600px;
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .notes {
-      display: grid;
-      gap: 2rem;
-      grid-template-columns: 1fr;
-      width: 100%;
-      max-width: 800px;
-    }
-
-    .note-card {
-      background: #1c1c1c;
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
-      animation: fadeInUp 1s ease;
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(40px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .note-card h2 {
-      margin-bottom: 1rem;
-      color: #f9a825;
-    }
-
-    .note-card ul {
-      margin-bottom: 1rem;
-      padding-left: 1.2rem;
-    }
-
-    .note-card li {
-      margin-bottom: 0.5rem;
-    }
-
-    .download-btn {
-      display: inline-block;
-      padding: 0.6rem 1rem;
-      background: #1e88e5;
-      color: white;
-      border-radius: 0.5rem;
-      text-decoration: none;
-      transition: background 0.3s ease;
-      font-size: 0.95rem;
-    }
-
-    .download-btn:hover {
-      background: #1565c0;
-    }
-
-    .back-btn {
-      margin-top: 2rem;
-      padding: 0.8rem 1.5rem;
-      background: #1e88e5;
-      color: white;
-      border: none;
-      border-radius: 0.6rem;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.3s;
-      text-decoration: none;
-    }
-
-    .back-btn:hover {
-      background: #1565c0;
     }
   </style>
 </head>
 <body>
 
-  <div class="background-animation"></div>
-
-  <div class="container">
-    <h1>📘 Physics Notes</h1>
-    <p>Here you can download detailed notes with concepts, formulas, and solved examples.</p>
-
-    <div class="notes">
-      <div class="note-card">
-        <h2>🚀 Motion & Kinematics</h2>
-        <ul>
-          <li>Equations of Motion</li>
-          <li>Graphs & Displacement</li>
-          <li>Velocity-Time Problems</li>
-        </ul>
-        <a class="download-btn" href="downloads/motion_kinematics.pdf" download>Download PDF</a>
-      </div>
-
-      <div class="note-card">
-        <h2>⚡ Laws of Motion</h2>
-        <ul>
-          <li>Newton’s Laws</li>
-          <li>Friction</li>
-          <li>Inclined Planes</li>
-        </ul>
-        <a class="download-btn" href="downloads/laws_of_motion.pdf" download>Download PDF</a>
-      </div>
-
-      <div class="note-card">
-        <h2>📈 Work, Energy & Power</h2>
-        <ul>
-          <li>Work Done by a Force</li>
-          <li>Conservation of Energy</li>
-          <li>Power Calculations</li>
-        </ul>
-        <a class="download-btn" href="downloads/work_energy_power.pdf" download>Download PDF</a>
-      </div>
-    </div>
-
-    <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+  <div class="particles">
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 25%; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: 4s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: 1s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: 3s;"></div>
   </div>
+
+  <h1>📘 Physics Notes</h1>
+
+  <div class="section">
+    <h2>⚡ Electrostatics</h2>
+    <div class="note-list">
+      <a href="physics/Electrostatics/Note1.pdf" download>📄 Note 1</a>
+      <a href="physics/Electrostatics/Note2.pdf" download>📄 Note 2</a>
+    </div>
+  </div>
+
+  <!-- Add more sections as you add more topics -->
+
+  <footer>
+    Back to <a href="dashboard.html" style="color:#f9a825;">Dashboard</a>
+  </footer>
 
 </body>
 </html>
