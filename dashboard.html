@@ -2,147 +2,99 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard | Abhay's Educational Site</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <style>
-    :root {
-      --primary: #1e88e5;
-      --accent: #f9a825;
-      --bg: #121212;
-      --card: #1d1d1d;
-      --text: #ffffff;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
+      margin: 0;
       font-family: 'Inter', sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
+      background: #0e0e0e;
+      color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 2rem;
-      overflow: hidden;
+      padding: 4rem 2rem;
+      animation: fadeIn 1s ease-out;
     }
 
-    .header {
-      text-align: center;
-      margin-bottom: 2rem;
-      z-index: 2;
-      position: relative;
-      animation: zoomIn 1.5s ease-out forwards;
-      transform: scale(0);
-    }
-
-    .header h1 {
+    h1 {
       font-size: 2.5rem;
-      color: var(--primary);
+      margin-bottom: 2rem;
+      color: #1e88e5;
     }
 
-    .header p {
-      font-size: 1.1rem;
-      color: var(--accent);
-      margin-top: 0.5rem;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem;
+      width: 100%;
+      max-width: 1000px;
     }
 
-    .dashboard {
-      background: var(--card);
+    .card {
+      background: #1c1c1c;
       border-radius: 1rem;
       padding: 2rem;
-      width: 100%;
-      max-width: 700px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-      z-index: 2;
-      position: relative;
       text-align: center;
-      animation: zoomIn 1.5s ease-out 0.5s forwards;
-      transform: scale(0);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
     }
 
-    .dashboard h2 {
-      color: var(--accent);
-      font-size: 1.8rem;
-      margin-bottom: 0.8rem;
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
     }
 
-    .logout {
-      margin-top: 2rem;
-      z-index: 2;
+    .icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #f9a825;
     }
 
-    .logout a {
-      color: #ccc;
-      text-decoration: none;
-      font-size: 0.95rem;
+    .title {
+      font-size: 1.3rem;
+      font-weight: 600;
     }
 
-    .logout a:hover {
-      color: var(--accent);
-    }
-
-    @keyframes zoomIn {
-      0% { transform: scale(0); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    /* Color Paper Strips */
-    .strips {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-      z-index: 10;
-      display: flex;
-    }
-
-    .strip {
-      flex: 1;
-      animation: reveal 1.5s forwards;
-    }
-
-    .strip:nth-child(1) { background: #e91e63; animation-delay: 0s; }
-    .strip:nth-child(2) { background: #9c27b0; animation-delay: 0.1s; }
-    .strip:nth-child(3) { background: #3f51b5; animation-delay: 0.2s; }
-    .strip:nth-child(4) { background: #03a9f4; animation-delay: 0.3s; }
-    .strip:nth-child(5) { background: #4caf50; animation-delay: 0.4s; }
-
-    @keyframes reveal {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-100%); }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Animated Paper Strips -->
-  <div class="strips">
-    <div class="strip"></div>
-    <div class="strip"></div>
-    <div class="strip"></div>
-    <div class="strip"></div>
-    <div class="strip"></div>
-  </div>
+  <h1>Here Are the Notes</h1>
 
-  <div class="header">
-    <h1>👋 Welcome Ayush!</h1>
-    <p>I do what I say, just make sure they understand it.</p>
-  </div>
-
-  <div class="dashboard">
-    <h2>📝 Here Are Your Notes</h2>
-    <p>This is your personal note area. More features coming soon!</p>
-  </div>
-
-  <div class="logout">
-    <a href="index.html">🚪 Logout</a>
+  <div class="grid">
+    <div class="card">
+      <div class="icon"><i class="fas fa-atom"></i></div>
+      <div class="title">Physics</div>
+    </div>
+    <div class="card">
+      <div class="icon"><i class="fas fa-vials"></i></div>
+      <div class="title">Physical Chemistry</div>
+    </div>
+    <div class="card">
+      <div class="icon"><i class="fas fa-dna"></i></div>
+      <div class="title">Organic Chemistry</div>
+    </div>
+    <div class="card">
+      <div class="icon"><i class="fas fa-flask"></i></div>
+      <div class="title">Inorganic Chemistry</div>
+    </div>
+    <div class="card">
+      <div class="icon"><i class="fas fa-square-root-alt"></i></div>
+      <div class="title">Maths</div>
+    </div>
   </div>
 
 </body>
