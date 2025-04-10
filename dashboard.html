@@ -5,97 +5,90 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard | Abhay's Educational Site</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <style>
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
       background: #0e0e0e;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 4rem 2rem;
-      animation: fadeIn 1s ease-out;
+      color: white;
+    }
+
+    .container {
+      padding: 3rem 1rem;
+      max-width: 1000px;
+      margin: auto;
+      text-align: center;
     }
 
     h1 {
       font-size: 2.5rem;
+      color: #f9a825;
       margin-bottom: 2rem;
-      color: #1e88e5;
     }
 
-    .grid {
+    .subjects {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 2rem;
-      width: 100%;
-      max-width: 1000px;
     }
 
-    .card {
-      background: #1c1c1c;
+    .subject-card {
+      background: #1d1d1d;
       border-radius: 1rem;
       padding: 2rem;
-      text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
       cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-decoration: none;
+      color: white;
     }
 
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    .subject-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
     }
 
-    .icon {
-      font-size: 3rem;
+    .subject-icon {
+      font-size: 2rem;
       margin-bottom: 1rem;
-      color: #f9a825;
     }
 
-    .title {
+    .subject-title {
       font-size: 1.3rem;
       font-weight: 600;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>📚 Here are the Notes</h1>
 
-  <h1>Here Are the Notes</h1>
+    <div class="subjects">
+      <a href="physics.html" class="subject-card">
+        <div class="subject-icon">📘</div>
+        <div class="subject-title">Physics</div>
+      </a>
 
-  <div class="grid">
-    <div class="card">
-      <div class="icon"><i class="fas fa-atom"></i></div>
-      <div class="title">Physics</div>
-    </div>
-    <div class="card">
-      <div class="icon"><i class="fas fa-vials"></i></div>
-      <div class="title">Physical Chemistry</div>
-    </div>
-    <div class="card">
-      <div class="icon"><i class="fas fa-dna"></i></div>
-      <div class="title">Organic Chemistry</div>
-    </div>
-    <div class="card">
-      <div class="icon"><i class="fas fa-flask"></i></div>
-      <div class="title">Inorganic Chemistry</div>
-    </div>
-    <div class="card">
-      <div class="icon"><i class="fas fa-square-root-alt"></i></div>
-      <div class="title">Maths</div>
+      <a href="physical.html" class="subject-card">
+        <div class="subject-icon">🧪</div>
+        <div class="subject-title">Physical Chemistry</div>
+      </a>
+
+      <a href="organic.html" class="subject-card">
+        <div class="subject-icon">🧬</div>
+        <div class="subject-title">Organic Chemistry</div>
+      </a>
+
+      <a href="inorganic.html" class="subject-card">
+        <div class="subject-icon">🔬</div>
+        <div class="subject-title">Inorganic Chemistry</div>
+      </a>
+
+      <a href="maths.html" class="subject-card">
+        <div class="subject-icon">📐</div>
+        <div class="subject-title">Maths</div>
+      </a>
     </div>
   </div>
-
 </body>
 </html>
