@@ -2,59 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Hybrid AI Particle System</title>
+    <title>Gemini-Powered Particle System</title>
     <style>
         body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Courier New', sans-serif; }
         
-        /* UI Overlay */
+        /* HUD UI */
         #hud {
             position: absolute;
             top: 20px;
             left: 20px;
-            width: 300px;
+            width: 320px;
             color: #00ffcc;
             pointer-events: none;
             z-index: 10;
+            background: rgba(0, 20, 20, 0.6);
+            padding: 15px;
+            border: 1px solid #00ffcc;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
         }
-        h1 { margin: 0; font-size: 1rem; border-bottom: 1px solid #00ffcc; padding-bottom: 5px; }
-        .data-row { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.85rem; }
+        h1 { margin: 0 0 10px 0; font-size: 1rem; border-bottom: 1px solid #00ffcc; padding-bottom: 5px; }
+        .data-row { display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.85rem; }
         .val { color: #fff; font-weight: bold; }
         
-        /* The "Chat" from the System */
+        /* AI Log */
         #ai-log {
-            margin-top: 20px;
-            height: 100px;
-            overflow: hidden;
-            border-left: 2px solid #00ffcc;
-            padding-left: 10px;
-            font-size: 0.8rem;
+            margin-top: 15px;
+            height: 120px;
+            overflow-y: auto;
+            border-top: 1px dashed #00ffcc;
+            padding-top: 5px;
+            font-size: 0.75rem;
             color: #aaa;
-            mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
         }
-        .ai-msg { margin-bottom: 5px; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-
-        /* Camera Feed */
+        .ai-msg { margin-bottom: 4px; animation: fadeIn 0.5s ease; }
+        .ai-loading { color: #ffff00; animation: pulse 1s infinite; }
+        
+        /* Webcam Preview */
         #webcam {
             position: absolute;
             bottom: 20px;
             right: 20px;
-            width: 200px;
+            width: 240px;
             border-radius: 8px;
-            border: 1px solid #333;
-            transform: scaleX(-1);
-            opacity: 0.6;
+            border: 2px solid #333;
+            transform: scaleX(-1); /* Mirror effect */
+            opacity: 0.8;
+            z-index: 100;
         }
-        
-        /* Loading/Status */
-        #status {
+
+        /* Loading Screen */
+        #loader {
             position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #00ffcc;
+            z-index: 999;
             font-size: 1.5rem;
-            pointer-events: none;
         }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
     <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
     <script type="importmap">
@@ -68,196 +79,202 @@
 </head>
 <body>
 
+    <div id="loader">Initializing Neural Uplink...</div>
+
     <div id="hud">
-        <h1>SYSTEM STATUS: ONLINE</h1>
+        <h1>GEMINI INTERFACE</h1>
+        <div class="data-row"><span>API STATUS:</span> <span id="api-status" class="val" style="color:yellow">STANDBY</span></div>
         <div class="data-row"><span>GESTURE:</span> <span id="gesture-disp" class="val">Detecting...</span></div>
-        <div class="data-row"><span>CONFIDENCE:</span> <span id="conf-disp" class="val">0%</span></div>
-        <div class="data-row"><span>FINGERS:</span> <span id="finger-disp" class="val">[0,0,0,0,0]</span></div>
+        <div class="data-row"><span>ACTION:</span> <span class="val" style="color:#ff0066">HOLD 👍 TO TRIGGER AI</span></div>
         
         <div id="ai-log">
-            <div class="ai-msg">> Initializing Neural Link...</div>
+            <div class="ai-msg">> System ready.</div>
+            <div class="ai-msg">> Waiting for Thumbs Up...</div>
         </div>
     </div>
 
-    <div id="status">Loading Vision Models...</div>
     <video id="webcam" autoplay playsinline></video>
 
     <script type="module">
         import * as THREE from 'three';
         import { FilesetResolver, HandLandmarker } from '@mediapipe/tasks-vision';
 
-        // --- CONSTANTS & CONFIG ---
-        const CONFIG = {
-            particleCount: 12000,
-            baseColor: new THREE.Color(0x00ffcc),
-            lerpSpeed: 0.05
-        };
-
-        // --- THREE.JS SCENE SETUP ---
+        // --- 1. USER CONFIGURATION ---
+        const API_KEY = "AIzaSyA5gnCyfVKeg1JbolCILmkmpFtC28uFoQ8"; // Your Key
+        const PARTICLE_COUNT = 15000;
+        
+        // --- 2. THREE.JS SETUP ---
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.z = 20;
+        camera.position.z = 25;
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         document.body.appendChild(renderer.domElement);
 
-        // --- PARTICLE SYSTEM ---
-        const particles = new THREE.BufferGeometry();
-        const positions = new Float32Array(CONFIG.particleCount * 3);
-        const colors = new Float32Array(CONFIG.particleCount * 3);
-        const targets = new Float32Array(CONFIG.particleCount * 3);
-        const colorTargets = new Float32Array(CONFIG.particleCount * 3);
+        // --- 3. PARTICLE SYSTEM ---
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(PARTICLE_COUNT * 3);
+        const colors = new Float32Array(PARTICLE_COUNT * 3);
+        const targets = new Float32Array(PARTICLE_COUNT * 3);
+        const targetColors = new Float32Array(PARTICLE_COUNT * 3);
 
-        // Initialize
-        for(let i=0; i<CONFIG.particleCount; i++) {
-            const idx = i*3;
-            positions[idx] = (Math.random()-0.5)*40;
-            positions[idx+1] = (Math.random()-0.5)*40;
-            positions[idx+2] = (Math.random()-0.5)*40;
+        // Init Particles
+        for(let i=0; i<PARTICLE_COUNT; i++) {
+            const x = (Math.random()-0.5)*50;
+            const y = (Math.random()-0.5)*50;
+            const z = (Math.random()-0.5)*50;
             
-            // Set initial color targets
-            colorTargets[idx] = CONFIG.baseColor.r;
-            colorTargets[idx+1] = CONFIG.baseColor.g;
-            colorTargets[idx+2] = CONFIG.baseColor.b;
+            positions[i*3] = x; positions[i*3+1] = y; positions[i*3+2] = z;
+            targets[i*3] = x; targets[i*3+1] = y; targets[i*3+2] = z;
+            
+            colors[i*3] = 0; colors[i*3+1] = 1; colors[i*3+2] = 1; // Initial Cyan
+            targetColors[i*3] = 0; targetColors[i*3+1] = 1; targetColors[i*3+2] = 1;
         }
-        
-        particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
         const material = new THREE.PointsMaterial({
             size: 0.15,
             vertexColors: true,
             blending: THREE.AdditiveBlending,
             depthWrite: false,
-            map: createCircleTexture() // Soft particles
+            transparent: true,
+            opacity: 0.8
         });
 
-        const particleSystem = new THREE.Points(particles, material);
+        const particleSystem = new THREE.Points(geometry, material);
         scene.add(particleSystem);
 
-        function createCircleTexture() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 32; canvas.height = 32;
-            const ctx = canvas.getContext('2d');
-            const grad = ctx.createRadialGradient(16,16,0,16,16,16);
-            grad.addColorStop(0, 'rgba(255,255,255,1)');
-            grad.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0,0,32,32);
-            const tex = new THREE.Texture(canvas);
-            tex.needsUpdate = true;
-            return tex;
-        }
-
-        // --- GESTURE LOGIC (The "Smart" Local Brain) ---
-        // We use vector geometry to determine which fingers are extended
-        function getFingerStates(landmarks) {
-            // Finger Tips: [4, 8, 12, 16, 20]
-            // Finger PIPs (Knuckles): [2, 6, 10, 14, 18]
-            // Wrist: 0
-            
-            const states = []; // [Thumb, Index, Middle, Ring, Pinky]
-            const wrist = landmarks[0];
-
-            // 1. Thumb Check (Check X distance relative to wrist/knuckle)
-            const thumbTip = landmarks[4];
-            const thumbIp = landmarks[3];
-            // Simple heuristic for thumb: is tip further from palm center than IP?
-            states.push(Math.abs(thumbTip.x - landmarks[17].x) > Math.abs(thumbIp.x - landmarks[17].x) ? 1 : 0);
-
-            // 2. Fingers Check (Y distance: Tip higher than PIP)
-            // Note: MediaPipe Y is inverted (0 is top). So smaller Y = higher.
-            const tips = [8, 12, 16, 20];
-            const pips = [6, 10, 14, 18];
-            
-            for(let i=0; i<4; i++) {
-                // We use distance to wrist to determine extension regardless of hand rotation
-                const dTip = Math.hypot(landmarks[tips[i]].x - wrist.x, landmarks[tips[i]].y - wrist.y);
-                const dPip = Math.hypot(landmarks[pips[i]].x - wrist.x, landmarks[pips[i]].y - wrist.y);
-                states.push(dTip > dPip * 1.2 ? 1 : 0); // 1.2 threshold prevents flicker
-            }
-            return states;
-        }
-
-        function matchGesture(states) {
-            const s = states.join('');
-            if (s === '00000' || s === '10000') return 'FIST'; // Thumb can be tricky
-            if (s === '11111' || s === '01111') return 'OPEN';
-            if (s === '01100' || s === '11100') return 'PEACE';
-            if (s === '01000' || s === '11000') return 'POINT';
-            if (s === '01001' || s === '11001') return 'ROCK';
-            return 'UNKNOWN';
-        }
-
-        // --- SHAPE GENERATORS ---
-        function updateShape(type) {
-            logAI(`Morphing geometry to: ${type}`);
-            for(let i=0; i<CONFIG.particleCount; i++) {
+        // --- 4. SHAPE GENERATION LOGIC ---
+        function setShape(shapeName) {
+            for(let i=0; i<PARTICLE_COUNT; i++) {
                 const idx = i*3;
-                let x,y,z;
+                let x, y, z;
 
-                if(type === 'FIST') { // Black Hole / Collapse
+                if(shapeName === 'sphere') {
+                    const r = 10;
+                    const phi = Math.acos(-1 + (2 * i) / PARTICLE_COUNT);
+                    const theta = Math.sqrt(PARTICLE_COUNT * Math.PI) * phi;
+                    x = r * Math.sin(phi) * Math.cos(theta);
+                    y = r * Math.sin(phi) * Math.sin(theta);
+                    z = r * Math.cos(phi);
+                }
+                else if(shapeName === 'heart') {
+                    const t = Math.PI * (Math.random()-0.5)*2;
                     const u = Math.random() * Math.PI * 2;
-                    const v = Math.random() * Math.PI;
-                    const r = Math.random() * 2; // Tight center
-                    x = r * Math.sin(v) * Math.cos(u);
-                    y = r * Math.sin(v) * Math.sin(u);
-                    z = r * Math.cos(v);
-                    
-                    // Red/Orange angry colors
-                    colorTargets[idx] = 1.0; colorTargets[idx+1] = 0.2; colorTargets[idx+2] = 0.0;
+                    x = 16 * Math.pow(Math.sin(t), 3);
+                    y = 13 * Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t);
+                    z = 2 * Math.cos(u) * Math.sin(t); // Thickness
+                    x*=0.5; y*=0.5; z*=0.5;
                 }
-                else if(type === 'OPEN') { // Galaxy / Cloud
-                    const angle = Math.random() * Math.PI * 2;
-                    const r = 10 + Math.random() * 15;
-                    x = Math.cos(angle) * r;
-                    z = Math.sin(angle) * r;
-                    y = (Math.random() - 0.5) * 5;
-                    
-                    // Cyan/Blue calm colors
-                    colorTargets[idx] = 0.0; colorTargets[idx+1] = 0.8; colorTargets[idx+2] = 1.0;
+                else if(shapeName === 'cube') {
+                    x = (Math.random()-0.5)*20;
+                    y = (Math.random()-0.5)*20;
+                    z = (Math.random()-0.5)*20;
                 }
-                else if(type === 'PEACE') { // Double Helix / DNA
-                    const t = (i / CONFIG.particleCount) * Math.PI * 20;
-                    x = Math.sin(t) * 5;
-                    z = Math.cos(t) * 5;
-                    y = (i / CONFIG.particleCount) * 40 - 20;
-                    if (i % 2 === 0) x *= -1; // Double strand
-
-                    // Green/Nature colors
-                    colorTargets[idx] = 0.2; colorTargets[idx+1] = 1.0; colorTargets[idx+2] = 0.5;
+                else if(shapeName === 'spiral' || shapeName === 'galaxy') {
+                    const angle = i * 0.05;
+                    const r = i * 0.001 * 10;
+                    x = Math.cos(angle) * r * 5;
+                    y = (Math.random()-0.5)*5;
+                    z = Math.sin(angle) * r * 5;
                 }
-                else if(type === 'ROCK') { // Chaotic Explosion
-                     x = (Math.random() - 0.5) * 50;
-                     y = (Math.random() - 0.5) * 50;
-                     z = (Math.random() - 0.5) * 50;
-                     // Purple/Pink Electric
-                     colorTargets[idx] = 0.8; colorTargets[idx+1] = 0.0; colorTargets[idx+2] = 1.0;
-                }
-                else if(type === 'POINT') { // Stream / Arrow
-                    x = (Math.random() - 0.5) * 5;
-                    y = (Math.random() - 0.5) * 5;
-                    z = (i / CONFIG.particleCount) * 40 - 20; // Long line
-                    // White/Yellow
-                    colorTargets[idx] = 1.0; colorTargets[idx+1] = 1.0; colorTargets[idx+2] = 0.5;
+                else {
+                    // Default Scatter
+                    x = (Math.random()-0.5)*40;
+                    y = (Math.random()-0.5)*40;
+                    z = (Math.random()-0.5)*40;
                 }
 
-                // If undefined (transition), keep old target
-                if(x !== undefined) {
-                    targets[idx] = x;
-                    targets[idx+1] = y;
-                    targets[idx+2] = z;
-                }
+                targets[idx] = x;
+                targets[idx+1] = y;
+                targets[idx+2] = z;
             }
         }
 
-        // --- VISION SETUP ---
-        let handLandmarker;
+        // --- 5. GEMINI API INTEGRATION ---
+        let isProcessing = false;
+
+        async function triggerGeminiAnalysis(videoElement) {
+            if (isProcessing) return;
+            isProcessing = true;
+            updateStatus("CONTACTING GEMINI...", "yellow");
+            logAI("Capturing visual data...", "ai-loading");
+
+            // 1. Capture Image from Video
+            const canvas = document.createElement('canvas');
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+            const base64Image = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+
+            // 2. Prepare Payload
+            const prompt = `
+                Look at the hand gesture in this image.
+                1. Identify the gesture (e.g., Peace, Fist, Open Hand, Spock, Thumbs Up).
+                2. Creatively assign a 3D Shape that matches the "mood" of the gesture (options: sphere, heart, cube, spiral, galaxy).
+                3. Assign a Color (hex code) that matches the mood.
+                4. Return ONLY a JSON object: {"gesture": "name", "shape": "shape_name", "color": "#RRGGBB"}.
+            `;
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+            const payload = {
+                contents: [{
+                    parts: [
+                        { text: prompt },
+                        { inline_data: { mime_type: "image/jpeg", data: base64Image } }
+                    ]
+                }]
+            };
+
+            // 3. Send Request
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                
+                // 4. Parse Response
+                const text = data.candidates[0].content.parts[0].text;
+                // Cleanup json markdown if present
+                const jsonStr = text.replace(/```json|```/g, '').trim();
+                const result = JSON.parse(jsonStr);
+
+                // 5. Apply Results
+                logAI(`Gemini sees: ${result.gesture}`);
+                logAI(`Morphing to: ${result.shape} (${result.color})`);
+                
+                setShape(result.shape);
+                
+                const col = new THREE.Color(result.color);
+                for(let i=0; i<PARTICLE_COUNT; i++) {
+                    targetColors[i*3] = col.r;
+                    targetColors[i*3+1] = col.g;
+                    targetColors[i*3+2] = col.b;
+                }
+
+                updateStatus("ONLINE", "#00ffcc");
+            } catch (error) {
+                console.error(error);
+                logAI("Error connecting to AI.", "red");
+                updateStatus("ERROR", "red");
+            } finally {
+                // Cooldown
+                setTimeout(() => { isProcessing = false; }, 2000);
+            }
+        }
+
+        // --- 6. COMPUTER VISION (TRIGGER) ---
+        let handLandmarker = undefined;
         let lastVideoTime = -1;
-        let lastGesture = '';
-        let gestureHoldTime = 0;
+        let thumbsUpFrames = 0;
 
         async function initVision() {
             const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm");
@@ -266,11 +283,11 @@
                 runningMode: "VIDEO",
                 numHands: 1
             });
-            document.getElementById('status').style.display = 'none';
-            startCamera();
+            document.getElementById('loader').style.display = 'none';
+            startWebcam();
         }
 
-        function startCamera() {
+        function startWebcam() {
             const video = document.getElementById('webcam');
             navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
                 video.srcObject = stream;
@@ -278,92 +295,83 @@
             });
         }
 
-        // --- MAIN LOOP ---
+        // --- 7. ANIMATION LOOP ---
         function animate() {
             requestAnimationFrame(animate);
             const video = document.getElementById('webcam');
 
-            // 1. VISION PROCESSING
+            // Vision Logic
             if (handLandmarker && video.currentTime !== lastVideoTime) {
                 lastVideoTime = video.currentTime;
                 const results = handLandmarker.detectForVideo(video, performance.now());
                 
                 if (results.landmarks.length > 0) {
-                    const landmarks = results.landmarks[0];
+                    const lm = results.landmarks[0];
                     
-                    // A. Calculate Finger States (The "Smart" Logic)
-                    const states = getFingerStates(landmarks);
-                    const gestureName = matchGesture(states);
+                    // Simple Thumbs Up Detection logic
+                    // Thumb tip (4) is higher (smaller Y) than Index knuckle (5)
+                    // Other fingers curled (Tip y > PIP y)
+                    const thumbIsUp = lm[4].y < lm[3].y && lm[4].y < lm[8].y;
+                    const fingersCurled = lm[12].y > lm[10].y && lm[16].y > lm[14].y;
 
-                    // UI Updates
-                    document.getElementById('finger-disp').innerText = JSON.stringify(states);
-                    document.getElementById('gesture-disp').innerText = gestureName;
-                    document.getElementById('conf-disp').innerText = "98%"; // Geometric calculation is high confidence
-
-                    // B. State Machine (Debouncing)
-                    // Only switch if we hold the gesture for 10 frames to avoid flickering
-                    if (gestureName === lastGesture) {
-                        gestureHoldTime++;
-                        if (gestureHoldTime === 10 && gestureName !== 'UNKNOWN') {
-                            updateShape(gestureName);
-                            // Here is where you would trigger the Real LLM if you wanted
-                            // consultRealLLM(gestureName); 
+                    if(thumbIsUp && fingersCurled) {
+                        thumbsUpFrames++;
+                        document.getElementById('gesture-disp').innerText = "THUMBS UP detected";
+                        document.getElementById('gesture-disp').style.color = "#00ffcc";
+                        
+                        // If held for 30 frames (~0.5s), trigger AI
+                        if(thumbsUpFrames === 30 && !isProcessing) {
+                            triggerGeminiAnalysis(video);
                         }
                     } else {
-                        lastGesture = gestureName;
-                        gestureHoldTime = 0;
+                        thumbsUpFrames = 0;
+                        document.getElementById('gesture-disp').innerText = "Tracking...";
+                        document.getElementById('gesture-disp').style.color = "#aaa";
                     }
 
-                    // C. Interaction (Move center of cloud)
-                    // Map palm (0) to 3D space
-                    const cx = (0.5 - landmarks[0].x) * 30; // Mirror X
-                    const cy = (0.5 - landmarks[0].y) * 20;
-                    
-                    // Soft follow
+                    // Move Center
+                    const cx = (0.5 - lm[0].x) * 30; 
+                    const cy = (0.5 - lm[0].y) * 20;
                     scene.position.x += (cx - scene.position.x) * 0.1;
                     scene.position.y += (cy - scene.position.y) * 0.1;
                 }
             }
 
-            // 2. PARTICLE PHYSICS
-            const p = particles.attributes.position.array;
-            const c = particles.attributes.color.array;
+            // Particle Physics
+            const p = geometry.attributes.position.array;
+            const c = geometry.attributes.color.array;
 
-            for(let i=0; i<CONFIG.particleCount; i++) {
+            for(let i=0; i<PARTICLE_COUNT; i++) {
                 const idx = i*3;
-                
-                // Position Lerp
-                p[idx] += (targets[idx] - p[idx]) * CONFIG.lerpSpeed;
-                p[idx+1] += (targets[idx+1] - p[idx+1]) * CONFIG.lerpSpeed;
-                p[idx+2] += (targets[idx+2] - p[idx+2]) * CONFIG.lerpSpeed;
+                p[idx] += (targets[idx] - p[idx]) * 0.05;
+                p[idx+1] += (targets[idx+1] - p[idx+1]) * 0.05;
+                p[idx+2] += (targets[idx+2] - p[idx+2]) * 0.05;
 
-                // Color Lerp
-                c[idx] += (colorTargets[idx] - c[idx]) * 0.05;
-                c[idx+1] += (colorTargets[idx+1] - c[idx+1]) * 0.05;
-                c[idx+2] += (colorTargets[idx+2] - c[idx+2]) * 0.05;
-
-                // Add Noise/Life
-                p[idx] += (Math.random()-0.5) * 0.05;
-                p[idx+1] += (Math.random()-0.5) * 0.05;
+                c[idx] += (targetColors[idx] - c[idx]) * 0.05;
+                c[idx+1] += (targetColors[idx+1] - c[idx+1]) * 0.05;
+                c[idx+2] += (targetColors[idx+2] - c[idx+2]) * 0.05;
             }
             
-            particles.attributes.position.needsUpdate = true;
-            particles.attributes.color.needsUpdate = true;
-            
-            // Rotate the whole system slowly
+            geometry.attributes.position.needsUpdate = true;
+            geometry.attributes.color.needsUpdate = true;
             particleSystem.rotation.y += 0.002;
 
             renderer.render(scene, camera);
         }
 
-        // --- UI HELPERS ---
-        function logAI(msg) {
+        // Helpers
+        function logAI(msg, cssClass = 'ai-msg') {
             const log = document.getElementById('ai-log');
             const div = document.createElement('div');
-            div.className = 'ai-msg';
+            div.className = cssClass;
             div.innerText = `> ${msg}`;
             log.prepend(div);
-            if(log.children.length > 5) log.lastChild.remove();
+        }
+
+        function updateStatus(text, color) {
+            const el = document.getElementById('api-status');
+            el.innerText = text;
+            el.style.color = color;
         }
 
         window.addEventListener('resize', () => {
