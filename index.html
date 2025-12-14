@@ -5,7 +5,8 @@
     <title>Gesture Controlled 3D Particles</title>
     <style>
         body { margin: 0; overflow: hidden; background-color: #050505; font-family: sans-serif; }
-        video { display: none; } /* Hide the raw camera feed */
+        
+        /* --- UI OVERLAY --- */
         #ui {
             position: absolute;
             top: 20px;
@@ -17,6 +18,21 @@
         h1 { margin: 0; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; }
         p { font-size: 0.9rem; color: #aaa; margin-top: 5px; }
         .highlight { color: #fff; font-weight: bold; }
+
+        /* --- CAMERA FEED STYLING --- */
+        #webcam {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 320px;    /* Width of the preview */
+            height: auto;
+            border: 2px solid #00ffcc;
+            border-radius: 12px;
+            opacity: 0.9;
+            transform: scaleX(-1); /* Mirror the video for natural interaction */
+            z-index: 100;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+        }
     </style>
     <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
     <script type="importmap">
@@ -51,7 +67,7 @@
         // --- CONFIGURATION ---
         const PARTICLE_COUNT = 15000;
         const PARTICLE_SIZE = 0.08;
-        const LERP_SPEED = 0.08; // How fast particles morph
+        const LERP_SPEED = 0.08;
         
         // --- THREE.JS SETUP ---
         const scene = new THREE.Scene();
@@ -66,19 +82,16 @@
         document.body.appendChild(renderer.domElement);
 
         // --- PARTICLE SYSTEM ---
-        // We will use BufferGeometry to manage positions
         const geometry = new THREE.BufferGeometry();
         const positions = new Float32Array(PARTICLE_COUNT * 3);
         const colors = new Float32Array(PARTICLE_COUNT * 3);
-        const targetPositions = new Float32Array(PARTICLE_COUNT * 3); // Where particles want to go
+        const targetPositions = new Float32Array(PARTICLE_COUNT * 3);
 
-        // Initialize random positions
         for (let i = 0; i < PARTICLE_COUNT; i++) {
             positions[i * 3] = (Math.random() - 0.5) * 50;
             positions[i * 3 + 1] = (Math.random() - 0.5) * 50;
             positions[i * 3 + 2] = (Math.random() - 0.5) * 50;
             
-            // Initial Colors (Cyan/Blue mix)
             colors[i * 3] = 0.0;
             colors[i * 3 + 1] = 0.5 + Math.random() * 0.5;
             colors[i * 3 + 2] = 1.0;
@@ -87,7 +100,6 @@
         geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-        // Shader for fancy particles
         const material = new THREE.PointsMaterial({
             size: PARTICLE_SIZE,
             vertexColors: true,
@@ -100,8 +112,7 @@
         const particles = new THREE.Points(geometry, material);
         scene.add(particles);
 
-        // --- SHAPE GENERATORS (MATH) ---
-        // Helper to set target positions based on a shape function
+        // --- SHAPE GENERATORS ---
         function setShape(shapeType) {
             document.getElementById('shape-name').innerText = shapeType;
             const tempVec = new THREE.Vector3();
@@ -119,22 +130,16 @@
                     z = r * Math.cos(phi);
                 } 
                 else if (shapeType === 'Heart') {
-                    // 3D Heart approximation
-                    const t = Math.PI * (Math.random() - 0.5) * 2; // -PI to PI
-                    const u = (Math.random()) * 2 * Math.PI; // 0 to 2PI
-                    
-                    // Basic heart curve extrusion
+                    const t = Math.PI * (Math.random() - 0.5) * 2; 
+                    const u = (Math.random()) * 2 * Math.PI; 
                     x = 16 * Math.pow(Math.sin(t), 3);
                     y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-                    z = 4 * Math.cos(u) * Math.sin(t); // add thickness
-                    
-                    // Scale down
+                    z = 4 * Math.cos(u) * Math.sin(t);
                     x *= 0.4; y *= 0.4; z *= 0.4;
                 } 
                 else if (shapeType === 'Saturn') {
                     const r = Math.random();
                     if (r < 0.6) {
-                        // Planet Body
                         const rad = 5;
                         const phi = Math.acos(-1 + (2 * Math.random()));
                         const theta = Math.sqrt(PARTICLE_COUNT * Math.PI) * phi;
@@ -142,21 +147,19 @@
                         y = rad * Math.sin(theta) * Math.sin(phi);
                         z = rad * Math.cos(phi);
                     } else {
-                        // Rings
                         const angle = Math.random() * Math.PI * 2;
                         const radius = 7 + Math.random() * 5;
                         x = Math.cos(angle) * radius;
                         z = Math.sin(angle) * radius;
-                        y = (Math.random() - 0.5) * 0.2; // Thin rings
+                        y = (Math.random() - 0.5) * 0.2;
                     }
-                    // Rotate the whole planet slightly
                     tempVec.set(x, y, z).applyAxisAngle(new THREE.Vector3(1, 0, 1), 0.5);
                     x = tempVec.x; y = tempVec.y; z = tempVec.z;
                 }
                 else if (shapeType === 'Flower') {
                     const u = Math.random() * Math.PI * 2;
                     const v = Math.random() * Math.PI;
-                    const r = 5 + 3 * Math.cos(5 * u) * Math.sin(v); // 5 petals
+                    const r = 5 + 3 * Math.cos(5 * u) * Math.sin(v);
                     x = r * Math.sin(v) * Math.cos(u);
                     y = r * Math.sin(v) * Math.sin(u);
                     z = r * Math.cos(v);
@@ -164,8 +167,8 @@
                 else if (shapeType === 'Torus') {
                     const u = Math.random() * Math.PI * 2;
                     const v = Math.random() * Math.PI * 2;
-                    const R = 7; // Major radius
-                    const r = 2.5; // Minor radius
+                    const R = 7;
+                    const r = 2.5;
                     x = (R + r * Math.cos(v)) * Math.cos(u);
                     y = (R + r * Math.cos(v)) * Math.sin(u);
                     z = r * Math.sin(v);
@@ -175,13 +178,11 @@
                 targetPositions[idx + 1] = y;
                 targetPositions[idx + 2] = z;
                 
-                // Change color based on shape
                 if(shapeType === 'Heart') {
-                    colors[idx] = 1.0; colors[idx+1] = 0.0; colors[idx+2] = 0.2; // Red/Pink
+                    colors[idx] = 1.0; colors[idx+1] = 0.0; colors[idx+2] = 0.2;
                 } else if (shapeType === 'Saturn') {
-                     colors[idx] = 1.0; colors[idx+1] = 0.8; colors[idx+2] = 0.4; // Gold
+                     colors[idx] = 1.0; colors[idx+1] = 0.8; colors[idx+2] = 0.4;
                 } else {
-                    // Rainbow gradient based on position
                     const h = (i / PARTICLE_COUNT) + 0.5;
                     const col = new THREE.Color().setHSL(h % 1, 0.8, 0.5);
                     colors[idx] = col.r; colors[idx+1] = col.g; colors[idx+2] = col.b;
@@ -190,16 +191,15 @@
             geometry.attributes.color.needsUpdate = true;
         }
 
-        // Shapes list
         const shapes = ['Sphere', 'Heart', 'Saturn', 'Flower', 'Torus'];
         let currentShapeIndex = 0;
         setShape(shapes[0]);
 
-        // --- HAND TRACKING LOGIC ---
+        // --- HAND TRACKING ---
         let handLandmarker = undefined;
         let lastVideoTime = -1;
         let gestureState = { x: 0, y: 0, isOpen: true, isPinching: false };
-        let pinchCooldown = false; // Prevent rapid switching
+        let pinchCooldown = false;
 
         async function createHandLandmarker() {
             const vision = await FilesetResolver.forVisionTasks(
@@ -234,50 +234,43 @@
                 if (results.landmarks.length > 0) {
                     const landmarks = results.landmarks[0];
                     
-                    // 1. Position Mapping (Index finger tip)
-                    // MediaPipe coords are 0-1. Map to -15 to 15 (Scene coords)
-                    // Note: Video is mirrored, so we invert X
+                    // Map Hand Coordinates (Mirrored X)
                     const x = (1 - landmarks[8].x - 0.5) * 30; 
-                    const y = (1 - landmarks[8].y - 0.5) * 20; // Invert Y for 3D space
+                    const y = (1 - landmarks[8].y - 0.5) * 20;
                     
-                    // Smooth lerp for mouse/hand tracking center
                     gestureState.x += (x - gestureState.x) * 0.2;
                     gestureState.y += (y - gestureState.y) * 0.2;
 
-                    // 2. Gesture Detection
-                    // Thumb tip (4) to Index tip (8) distance
                     const pinchDist = Math.hypot(
                         landmarks[8].x - landmarks[4].x,
                         landmarks[8].y - landmarks[4].y
                     );
 
-                    // Wrist (0) to Middle Finger Tip (12) distance for Open/Closed check
                     const handOpenDist = Math.hypot(
                         landmarks[12].x - landmarks[0].x,
                         landmarks[12].y - landmarks[0].y
                     );
 
-                    // Pinch Logic (Switch Shape)
+                    // Pinch (Switch Shape)
                     if (pinchDist < 0.05) {
                         if (!pinchCooldown) {
                             currentShapeIndex = (currentShapeIndex + 1) % shapes.length;
                             setShape(shapes[currentShapeIndex]);
                             pinchCooldown = true;
-                            setTimeout(() => pinchCooldown = false, 1000); // 1 sec cooldown
+                            setTimeout(() => pinchCooldown = false, 1000);
                         }
                         gestureState.isPinching = true;
                     } else {
                         gestureState.isPinching = false;
                     }
 
-                    // Fist vs Open Logic (Expansion)
-                    // If fingers are curled, distance is small
+                    // Fist vs Open (Expand/Contract)
                     gestureState.isOpen = handOpenDist > 0.3; 
                 }
             }
         }
 
-        // --- ANIMATION LOOP ---
+        // --- ANIMATION ---
         const clock = new THREE.Clock();
         const fpsElem = document.getElementById('fps');
         let frameCount = 0;
@@ -290,42 +283,29 @@
             const delta = time - lastTime;
             lastTime = time;
 
-            // Update FPS
             if(frameCount++ % 20 === 0) fpsElem.innerText = Math.round(1/delta);
 
-            // Run Computer Vision
             detectHands();
 
             const posAttribute = geometry.attributes.position;
             const currentPos = posAttribute.array;
 
-            // Update Particles
             for (let i = 0; i < PARTICLE_COUNT; i++) {
                 const idx = i * 3;
                 
-                // Get Target
                 let tx = targetPositions[idx];
                 let ty = targetPositions[idx + 1];
                 let tz = targetPositions[idx + 2];
 
-                // Apply Hand Gesture Logic
-                // 1. Move entire shape to hand position
                 tx += gestureState.x;
                 ty += gestureState.y;
 
-                // 2. Expansion / Contraction (Fist vs Open)
-                let scaleFactor = gestureState.isOpen ? 1.2 : 0.2; // Expand or Crush
+                let scaleFactor = gestureState.isOpen ? 1.2 : 0.2; 
                 
-                // Add some "breathing" or noise
-                const noise = Math.sin(time * 2 + i * 0.1) * 0.2;
-                
-                // Calculate current vector relative to hand center
-                // We perform the morphing step
                 currentPos[idx] += (tx * scaleFactor - currentPos[idx]) * LERP_SPEED;
                 currentPos[idx+1] += (ty * scaleFactor - currentPos[idx+1]) * LERP_SPEED;
                 currentPos[idx+2] += (tz * scaleFactor - currentPos[idx+2]) * LERP_SPEED;
 
-                // Add simple rotation to the whole system
                 const x = currentPos[idx];
                 const z = currentPos[idx+2];
                 currentPos[idx] = x * Math.cos(0.005) - z * Math.sin(0.005);
@@ -336,14 +316,12 @@
             renderer.render(scene, camera);
         }
 
-        // Handle window resize
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // Initialize
         createHandLandmarker().then(() => {
             animate();
         });
